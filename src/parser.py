@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from pypdf import PdfReader
 
@@ -28,3 +29,5 @@ def extract_text(file_path: str | Path) -> str:
 
         return "\n".join(pages)
 
+    # Handle .txt, .md, and .py files
+    return path.read_text(encoding="utf-8")
