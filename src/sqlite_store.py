@@ -1,5 +1,4 @@
 import sqlite3
-import uuid
 from pathlib import Path
 
 
@@ -25,7 +24,7 @@ class SQLiteStore:
 
         self.conn.commit()
 
-    def add_chunks(self, file_path: str, chunks: list[str]):
+    def add_chunks(self, file_path: str, chunks: list[str], chunk_ids: list[str]):
         file_path = str(Path(file_path).resolve())
 
         with self.conn:
@@ -35,10 +34,7 @@ class SQLiteStore:
                 (file_path,)
             )
 
-            for i, chunk in enumerate(chunks):
-                chunk_id = str(
-                    uuid.uuid5(uuid.NAMESPACE_URL, f"{file_path}:{i}")
-                )
+            for i, (chunk, chunk_id) in enumerate(zip(chunks, chunk_ids)):
 
                 self.conn.execute("""
                     INSERT INTO chunks_fts

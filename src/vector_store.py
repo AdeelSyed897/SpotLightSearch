@@ -16,14 +16,12 @@ class VectorStore:
         else:
             self.table = None
 
-    def add_chunks(
-        self,
-        file_path: str,
-        chunks: list[str],
-        vectors: list[list[float]]
-    ):
+    def add_chunks(self,file_path: str,chunks: list[str],vectors: list[list[float]],chunk_ids: list[str]):
         if len(chunks) != len(vectors):
             raise ValueError("Each chunk must have one vector")
+
+        if len(chunks) != len(chunk_ids):
+            raise ValueError("Each chunk must have one chunk ID")
 
         if not chunks:
             return
@@ -35,10 +33,7 @@ class VectorStore:
 
         records = []
 
-        for i, (chunk, vector) in enumerate(zip(chunks, vectors)):
-            chunk_id = str(
-                uuid.uuid5(uuid.NAMESPACE_URL, f"{file_path}:{i}")
-            )
+        for i, (chunk, vector, chunk_id) in enumerate(zip(chunks, vectors, chunk_ids)):
 
             records.append({
                 "chunk_id": chunk_id,
