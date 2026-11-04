@@ -7,6 +7,7 @@ from src.sqlite_store import SQLiteStore
 from src.vector_store import VectorStore
 import uuid
 
+IGNORED_DIRECTORIES = {".git", ".venv","venv","node_modules","__pycache__",}
 
 class Indexer:
     def __init__(self):
@@ -37,5 +38,9 @@ class Indexer:
             raise NotADirectoryError(f"Directory not found: {root}")
 
         for path in root.rglob("*"):
+
+            if any(part in IGNORED_DIRECTORIES for part in path.parts):
+                continue
+
             if path.is_file() and is_supported_file(path):
                 self.index_file(path)
