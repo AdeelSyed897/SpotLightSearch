@@ -2,7 +2,7 @@ from pathlib import Path
 from pypdf import PdfReader
 
 
-SUPPORTED_EXTENSIONS = {".txt", ".md", ".py", ".pdf"}
+SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf"}
 
 
 def extract_text(file_path: str | Path) -> str:

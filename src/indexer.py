@@ -43,4 +43,5 @@ class Indexer:
                 continue
 
             if path.is_file() and is_supported_file(path):
+                print(f"Indexing: {path}")
                 self.index_file(path)
