@@ -1,5 +1,6 @@
 from pathlib import Path
 from src.parser import extract_text
+from src.parser import is_supported_file
 from src.chunker import chunk_text
 from src.embedder import Embedder
 from src.sqlite_store import SQLiteStore
@@ -28,3 +29,13 @@ class Indexer:
         self.vector_store.add_chunks( str(path), chunks, vectors, chunk_ids)
 
         return len(chunks)
+
+    def index_directory(self, directory_path: str):
+        root = Path(directory_path).expanduser()
+
+        if not root.is_dir():
+            raise NotADirectoryError(f"Directory not found: {root}")
+
+        for path in root.rglob("*"):
+            if path.is_file() and is_supported_file(path):
+                self.index_file(path)

@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from pypdf import PdfReader
 
@@ -31,3 +30,7 @@ def extract_text(file_path: str | Path) -> str:
 
     # Handle .txt, .md, and .py files
     return path.read_text(encoding="utf-8")
+
+def is_supported_file(file_path: str | Path) -> bool:
+    path = Path(file_path)
+    return path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
