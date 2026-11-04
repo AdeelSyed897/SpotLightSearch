@@ -25,6 +25,9 @@ class SQLiteStore:
         self.conn.commit()
 
     def add_chunks(self, file_path: str, chunks: list[str], chunk_ids: list[str]):
+        if len(chunks) != len(chunk_ids):
+            raise ValueError("Each chunk must have one chunk ID")
+
         file_path = str(Path(file_path).resolve())
 
         with self.conn:

@@ -28,7 +28,7 @@ def extract_text(file_path: str | Path) -> str:
 
         return "\n".join(pages)
 
-    # Handle .txt, .md, and .py files
+    # Handle .txt, and .md files
     return path.read_text(encoding="utf-8")
 
 def is_supported_file(file_path: str | Path) -> bool:
