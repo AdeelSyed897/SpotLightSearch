@@ -21,6 +21,12 @@ class SQLiteStore:
                 content
             )
         """)
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS indexed_files (
+                file_path TEXT PRIMARY KEY,
+                mtime_ns INTEGER NOT NULL
+            )
+        """)
 
         self.conn.commit()
 
@@ -44,6 +50,36 @@ class SQLiteStore:
                     (chunk_id, file_path, chunk_index, content)
                     VALUES (?, ?, ?, ?)
                 """, (chunk_id, file_path, i, chunk))
+
+
+    # setter for file and modification time
+    def set_file_mtime(self, file_path: str, mtime_ns: int):
+        file_path = str(Path(file_path).resolve())
+
+        with self.conn:
+            self.conn.execute("""
+                INSERT INTO indexed_files (file_path, mtime_ns)
+                VALUES (?, ?)
+                ON CONFLICT(file_path)
+                DO UPDATE SET mtime_ns = excluded.mtime_ns
+            """, (file_path, mtime_ns))
+
+    # return modification time of file
+    def get_file_mtime(self, file_path: str):
+        file_path = str(Path(file_path).resolve())
+
+        cursor = self.conn.execute("""
+            SELECT mtime_ns
+            FROM indexed_files
+            WHERE file_path = ?
+        """, (file_path,))
+
+        row = cursor.fetchone()
+
+        if row is None:
+            return None
+
+        return row[0]
 
     def search(self, query: str):
         cursor = self.conn.execute("""

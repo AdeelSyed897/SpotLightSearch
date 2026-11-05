@@ -16,7 +16,14 @@ class Indexer:
         self.vector_store = VectorStore()
 
     def index_file(self, file_path: str):
-        path = Path(file_path)
+        path = Path(file_path).expanduser().resolve()
+
+        current_mtime = path.stat().st_mtime_ns
+        stored_mtime = self.sqlite_store.get_file_mtime(str(path))
+
+        if stored_mtime == current_mtime:
+            print(f"Skipping unchanged file: {path}")
+            return 0
 
         text = extract_text(path)
 
@@ -28,6 +35,8 @@ class Indexer:
         self.sqlite_store.add_chunks(str(path), chunks, chunk_ids)
 
         self.vector_store.add_chunks( str(path), chunks, vectors, chunk_ids)
+
+        self.sqlite_store.set_file_mtime(str(path),current_mtime)
 
         return len(chunks)
 
