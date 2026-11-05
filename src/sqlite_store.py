@@ -81,8 +81,8 @@ class SQLiteStore:
 
         return row[0]
 
-    def search(self, query: str):
-        cursor = self.conn.execute("""
+    def search(self, query: str, limit=20):
+        return_cursor = self.conn.execute("""
             SELECT
                 file_path,
                 chunk_index,
@@ -91,10 +91,10 @@ class SQLiteStore:
             FROM chunks_fts
             WHERE chunks_fts MATCH ?
             ORDER BY score
-            LIMIT 5
-        """, (query,))
+            LIMIT ?
+        """, (query, limit))
 
-        return cursor.fetchall()
+        return return_cursor.fetchall()
 
     def close(self):
         self.conn.close()
