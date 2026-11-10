@@ -27,6 +27,13 @@ class SQLiteStore:
                 mtime_ns INTEGER NOT NULL
             )
         """)
+        self.conn.execute("""
+            CREATE VIRTUAL TABLE IF NOT EXISTS files_fts
+            USING fts5(
+                file_path UNINDEXED,
+                file_name
+            )
+        """)
 
         self.conn.commit()
 
@@ -80,6 +87,21 @@ class SQLiteStore:
             return None
 
         return row[0]
+
+    #setter/adder for the file name 
+    def add_file(self, file_path: str):
+        path = Path(file_path).resolve()
+
+        with self.conn:
+            self.conn.execute(
+                "DELETE FROM files_fts WHERE file_path = ?",
+                (str(path),)
+            )
+
+            self.conn.execute("""
+                INSERT INTO files_fts (file_path, file_name)
+                VALUES (?, ?)
+            """, (str(path), path.name))
 
     def search(self, query: str, limit=20):
         return_cursor = self.conn.execute("""
