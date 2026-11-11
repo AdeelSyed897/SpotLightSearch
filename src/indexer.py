@@ -25,6 +25,8 @@ class Indexer:
             print(f"Skipping unchanged file: {path}")
             return 0
 
+        self.sqlite_store.add_file(str(path))
+
         text = extract_text(path)
 
         chunks = chunk_text(text, chunk_size=150,overlap=30)
