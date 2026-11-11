@@ -66,3 +66,14 @@ class VectorStore:
             .limit(limit)
             .to_list()
         )
+
+    def remove_file(self, file_path: str):
+        if self.table is None:
+            return
+
+        file_path = str(Path(file_path).resolve())
+        safe_path = file_path.replace("'", "''")
+
+        self.table.delete(
+            f"file_path = '{safe_path}'"
+        )
