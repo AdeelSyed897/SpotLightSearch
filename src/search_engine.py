@@ -1,7 +1,8 @@
 from src.embedder import Embedder
 from src.sqlite_store import SQLiteStore
 from src.vector_store import VectorStore
-
+import time
+import math
 
 class SearchEngine:
     def __init__(self):
@@ -32,3 +33,18 @@ class SearchEngine:
                 break
 
         return unique
+
+    #convert into recency score with a logarithmic decay
+    def _recency_score(self, mtime_ns: int) -> float:
+        current_time_ns = time.time_ns()
+
+        age_ns = max(0, current_time_ns - mtime_ns)
+
+        nanoseconds_per_day = 86_400_000_000_000
+        age_days = age_ns / nanoseconds_per_day
+
+        half_life_days = 180
+
+        return math.exp(
+            -math.log(2) * age_days / half_life_days
+        )
