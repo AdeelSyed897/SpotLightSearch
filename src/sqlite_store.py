@@ -103,6 +103,7 @@ class SQLiteStore:
                 VALUES (?, ?)
             """, (str(path), path.name))
 
+    #search chunks
     def search(self, query: str, limit=20):
         return_cursor = self.conn.execute("""
             SELECT
@@ -117,6 +118,18 @@ class SQLiteStore:
         """, (query, limit))
 
         return return_cursor.fetchall()
+
+    #search file names
+    def search_files(self, query: str, limit: int = 20):
+        cursor = self.conn.execute("""
+            SELECT file_path, file_name, bm25(files_fts) AS score
+            FROM files_fts
+            WHERE files_fts MATCH ?
+            ORDER BY score
+            LIMIT ?
+        """, (query, limit))
+
+        return cursor.fetchall()
 
     def close(self):
         self.conn.close()
