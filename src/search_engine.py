@@ -12,10 +12,20 @@ class SearchEngine:
 
     def semantic_search(self, query: str, limit=3):
         query_vector = self.embedder.embed_chunks([query])[0]
+        results = self.vector_store.search(query_vector, limit=20)
 
-        results = self.vector_store.search(query_vector,limit=20)
+        file_results = {}
 
-        return self._unique_files([result["file_path"] for result in results],limit)
+        for result in results:
+            file_path = result["file_path"]
+            semantic_score = self._normalize_semantic(result["_distance"])
+
+            if file_path not in file_results:
+                file_results[file_path] = []
+
+            file_results[file_path].append(semantic_score)
+
+        print("FILE RESULTS:", file_results)
 
     def keyword_search(self, query: str, limit=3):
         results = self.sqlite_store.search(query,limit=20)

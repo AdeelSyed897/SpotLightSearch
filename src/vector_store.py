@@ -59,22 +59,6 @@ class VectorStore:
 
         return self.table.search(query_vector).distance_type("cosine").limit(limit).to_list()
 
-    def semantic_search(self, query: str, limit=3):
-        query_vector = self.embedder.embed_chunks([query])[0]
-        results = self.vector_store.search(query_vector, limit=20)
-
-        file_results = {}
-
-        for result in results:
-            file_path = result["file_path"]
-            semantic_score = self._normalize_semantic(result["_distance"])
-
-            if file_path not in file_results:
-                file_results[file_path] = []
-
-            file_results[file_path].append(semantic_score)
-
-        print("FILE RESULTS:", file_results)
 
     def remove_file(self, file_path: str):
         if self.table is None:
