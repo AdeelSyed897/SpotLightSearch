@@ -36,6 +36,9 @@ class SearchEngine:
 
     def _semantic_relevance(self,semantic: float,filename: float,recency: float,multi_chunk: float) -> float:
         return 0.55 * semantic + 0.20 * filename + 0.15 * recency + 0.10 * multi_chunk
+
+    def _keyword_relevance(self, content: float, filename: float, recency: float, multi_chunk: float) -> float:
+        return 0.40 * content + 0.35 * filename + 0.15 * recency + 0.10 * multi_chunk
     
     #convert into recency score with a exp decay
     def _recency_score(self, mtime_ns: int) -> float:
